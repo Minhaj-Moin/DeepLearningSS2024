@@ -342,7 +342,7 @@ class TestSoftMax(unittest.TestCase):
         input_tensor = np.arange(self.categories * self.batch_size)
         input_tensor = input_tensor / 100.
         input_tensor = input_tensor.reshape((self.categories, self.batch_size))
-        # print(input_tensor)
+        print(input_tensor.T)
         layer = SoftMax.SoftMax()
         prediction = layer.forward(input_tensor.T)
         # print(prediction)
@@ -354,8 +354,8 @@ class TestSoftMax(unittest.TestCase):
                                      0.26018794, 0.26018794],
                                     [0.28469095, 0.28469095, 0.28469095, 0.28469095, 0.28469095, 0.28469095, 0.28469095,
                                      0.28469095, 0.28469095]])
-        # print(expected_values)
-        # print(prediction)
+        print(expected_values)
+        print(prediction)
         np.testing.assert_almost_equal(expected_values, prediction.T,
                                        err_msg="Possible error: The forward function is not properly implemented. "
                                                "Please refer to the lecture slided for the correct function. make "

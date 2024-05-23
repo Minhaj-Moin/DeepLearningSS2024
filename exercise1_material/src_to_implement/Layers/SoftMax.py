@@ -1,4 +1,6 @@
-from  Layers.Base  import BaseLayer
+if __name__=='__main__':
+	from Base import BaseLayer
+else: from Layers.Base import BaseLayer
 import numpy as np
 class SoftMax(BaseLayer):
 	
@@ -7,15 +9,27 @@ class SoftMax(BaseLayer):
 		self.value = None
 
 	def forward(self, input_tensor):
-		exps = np.exp(input_tensor - np.max(input_tensor)) 
-		self.value = exps / exps.sum()
-		return self.value
 		
-	def backward(self, error_tensor):
-		idx = np.arange(min(error_tensor.shape[0],error_tensor.shape[1]))
-		x = error_tensor.copy()
-		x = -np.dot(x,x)
-		x[idx,idx] = x(1-x)
-		return x
-		
+		exps = np.exp(input_tensor.T - np.max(input_tensor,axis=1)).T
+		# print("INPUT",input_tensor,'\n', exps)
+		self.value = (exps.T / np.sum(exps,axis=1)).T
+		return self.value.round(4)
 	
+
+
+	def backward(self, error_tensor):
+		# idx = np.arange(min(error_tensor.shape[0],error_tensor.shape[1]))
+		# x = error_tensor.copy()
+		# x = error_tensor * error_tensor
+		# print(idx)
+		# x[idx,idx] = x*(1-x)
+		# grad = -np.outer(self.value, self.value) + np.diag(self.value.flatten())
+		# print("WPW",(self.value * (error_tensor - (self.value * error_tensor).sum(axis=0))).shape, self.value.shape, error_tensor.shape)
+		return self.value * (error_tensor - np.multiply(self.value,error_tensor).sum(axis=0)).round(3)
+		
+# input_tensor = self.label_tensor - 1.
+# input_tensor *= -100.
+layer = SoftMax()
+pred = layer.forward((np.array([[100.,  -0. ,100. ,100.], [ -0., 100., 100., 100.], [100., 100., 100,  -0.], [100, 100, 100,  -0.], 
+	[ -0., 100., 100., 100.], [100., 100., 100.,  -0.], [100., 100.,  -0., 100.], [100.,  -0., 100., 100.], [100.,  -0., 100., 100.]])-100)*-1)
+print(pred)
