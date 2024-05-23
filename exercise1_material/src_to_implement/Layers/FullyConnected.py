@@ -9,7 +9,7 @@ class FullyConnected(BaseLayer):
 		BaseLayer.__init__(self)
 		self.trainable = True
 		self.weights = np.random.uniform(0,1,(input_size+1,output_size))
-		self.bias = np.zeros(output_size)
+		self.bias = np.random.uniform(0,1,(output_size))
 		self.input_size = input_size
 		self.output_size = output_size
 		self.input_tensor = None
@@ -30,19 +30,13 @@ class FullyConnected(BaseLayer):
 	def forward(self, input_tensor):
 		b = np.ones((input_tensor.shape[0],input_tensor.shape[1]+1))
 		b[:,:-1] = input_tensor
-		self.input_tensor = b.copy()
-		# print("InputTensor",input_tensor,b, 'END')
-		# print("Weights, inputSize, InputTensor",self.weights.shape, self.input_size, input_tensor.shape )
-		return np.dot(b,self.weights)
-	def backward(self, error_tensor):
-		# print(error_tensor.shape, self.weights.shape, self.input_size )
-		
-		self._gradient_weights = np.clip(np.dot(error_tensor,self.weights.transpose())[:,:-1],-1,1)
+		self.input_tensor = b
+		return np.dot(self.input_tensor,self.weights)
+	def backward(self, error_tensor):		
+		self._gradient_weights = np.dot(self.input_tensor.T,error_tensor)
 		self.weights = self.calculate_update(self.weights, self._gradient_weights)
-
-		return np.dot(error_tensor,self.weights.transpose())[:,:-1]#self.weights
+		return np.dot(error_tensor,self.weights.transpose())[:,:-1]
 	def calculate_update(self,weight_tensor, gradient_tensor):
 		if self._optimizer: 
-			print('YOLO=',weight_tensor.shape, self.input_tensor.T.shape, gradient_tensor.shape)
-			weight_tensor -= self._optimizer.learning_rate * np.dot(self.input_tensor.T,gradient_tensor)[:,:-1]
+			weight_tensor -= gradient_tensor#self._optimizer.learning_rate * np.dot(self.input_tensor[:,:-1].T,gradient_tensor)[:,:-1]
 		return weight_tensor

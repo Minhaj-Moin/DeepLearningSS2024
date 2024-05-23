@@ -49,10 +49,12 @@ class TestFullyConnected1(unittest.TestCase):
                          )
 
     def test_backward_size(self):
+        print("test_backward_size","FullyConnected.FullyConnected(",self.input_size,',', self.output_size,")", self.input_tensor.shape)
         layer = FullyConnected.FullyConnected(self.input_size, self.output_size)
         output_tensor = layer.forward(self.input_tensor)
-        print(output_tensor.shape)
+        print("OutputTensorShape",output_tensor.shape)
         error_tensor = layer.backward(output_tensor)
+        print("ErrorTensorShape",error_tensor.shape)
         self.assertEqual(error_tensor.shape[1],
                          self.input_size,
                          msg="Possible error: The shape of the output tensor (backward function) is not correct. "
@@ -230,6 +232,7 @@ class TestSoftMax(unittest.TestCase):
         pred = layer.forward(input_tensor)
         loss_layer.forward(pred, self.label_tensor)
         error = loss_layer.backward(self.label_tensor)
+        print("test_backward_zero_loss",error)
         error = layer.backward(error)
         self.assertAlmostEqual(np.sum(error), 0,
                                msg="Possible error: The derivative of the ReLU function is not correctly implemented."
@@ -342,7 +345,7 @@ class TestSoftMax(unittest.TestCase):
         input_tensor = np.arange(self.categories * self.batch_size)
         input_tensor = input_tensor / 100.
         input_tensor = input_tensor.reshape((self.categories, self.batch_size))
-        print(input_tensor.T)
+        # print(input_tensor.T)
         layer = SoftMax.SoftMax()
         prediction = layer.forward(input_tensor.T)
         # print(prediction)
@@ -354,8 +357,8 @@ class TestSoftMax(unittest.TestCase):
                                      0.26018794, 0.26018794],
                                     [0.28469095, 0.28469095, 0.28469095, 0.28469095, 0.28469095, 0.28469095, 0.28469095,
                                      0.28469095, 0.28469095]])
-        print(expected_values)
-        print(prediction)
+        # print(expected_values)
+        # print(prediction)
         np.testing.assert_almost_equal(expected_values, prediction.T,
                                        err_msg="Possible error: The forward function is not properly implemented. "
                                                "Please refer to the lecture slided for the correct function. make "
