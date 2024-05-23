@@ -34,9 +34,6 @@ class FullyConnected(BaseLayer):
 		return np.dot(self.input_tensor,self.weights)
 	def backward(self, error_tensor):		
 		self._gradient_weights = np.dot(self.input_tensor.T,error_tensor)
-		self.weights = self.calculate_update(self.weights, self._gradient_weights)
+		if self._optimizer:
+			self.weights = self._optimizer.calculate_update(self.weights, self._gradient_weights)
 		return np.dot(error_tensor,self.weights.transpose())[:,:-1]
-	def calculate_update(self,weight_tensor, gradient_tensor):
-		if self._optimizer: 
-			weight_tensor -= gradient_tensor#self._optimizer.learning_rate * np.dot(self.input_tensor[:,:-1].T,gradient_tensor)[:,:-1]
-		return weight_tensor

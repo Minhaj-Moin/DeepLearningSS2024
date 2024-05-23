@@ -28,7 +28,7 @@ class SoftMax(BaseLayer):
 		# x = (np.dot(np.diagflat(error_tensor) - np.dot(error_tensor, error_tensor.T),self.value))
 		# return x#np.dot(np.diagflat(error_tensor) - np.dot(error_tensor, error_tensor.T),self.value)
 		# print("WPW",(self.value * (error_tensor - (self.value * error_tensor).sum(axis=0))).shape, self.value.shape, error_tensor.shape)
-		return self.value * ((error_tensor.T - np.multiply(self.value,error_tensor).sum(axis=1).T).T)#.round(3)
+		return self.value * ((error_tensor.T - np.multiply(self.value,error_tensor).sum(axis=1).T).T)
 		
 # input_tensor = self.label_tensor - 1.
 # input_tensor *= -100.

@@ -49,12 +49,12 @@ class TestFullyConnected1(unittest.TestCase):
                          )
 
     def test_backward_size(self):
-        print("test_backward_size","FullyConnected.FullyConnected(",self.input_size,',', self.output_size,")", self.input_tensor.shape)
+        # print("test_backward_size","FullyConnected.FullyConnected(",self.input_size,',', self.output_size,")", self.input_tensor.shape)
         layer = FullyConnected.FullyConnected(self.input_size, self.output_size)
         output_tensor = layer.forward(self.input_tensor)
-        print("OutputTensorShape",output_tensor.shape)
+        # print("OutputTensorShape",output_tensor.shape)
         error_tensor = layer.backward(output_tensor)
-        print("ErrorTensorShape",error_tensor.shape)
+        # print("ErrorTensorShape",error_tensor.shape)
         self.assertEqual(error_tensor.shape[1],
                          self.input_size,
                          msg="Possible error: The shape of the output tensor (backward function) is not correct. "
