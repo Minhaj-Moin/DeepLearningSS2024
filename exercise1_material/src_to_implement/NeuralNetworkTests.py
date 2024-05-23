@@ -73,9 +73,10 @@ class TestFullyConnected1(unittest.TestCase):
             output_tensor = layer.forward(self.input_tensor)
             error_tensor = np.zeros([self.batch_size, self.output_size])
             error_tensor -= output_tensor
-            # print(error_tensor.shape)
+            print(error_tensor.shape, layer.weights)
             layer.backward(error_tensor)
             new_output_tensor = layer.forward(self.input_tensor)
+            print(_, np.sum(np.power(output_tensor, 2)), np.sum(np.power(new_output_tensor, 2)))
             self.assertLess(np.sum(np.power(output_tensor, 2)), np.sum(np.power(new_output_tensor, 2)),
                             msg="Possible error: the weight update has not been performed correctly. Have a look at the"
                                 "computation of gradient_weights. If the gradient_weights test passes, have a look at "
