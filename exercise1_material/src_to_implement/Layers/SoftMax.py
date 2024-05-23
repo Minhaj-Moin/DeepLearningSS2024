@@ -13,7 +13,7 @@ class SoftMax(BaseLayer):
 		exps = np.exp(input_tensor.T - np.max(input_tensor,axis=1)).T
 		# print("INPUT",input_tensor,'\n', exps)
 		self.value = (exps.T / np.sum(exps,axis=1)).T
-		return self.value.round(4)
+		return self.value.round(7)
 	
 
 
@@ -24,6 +24,10 @@ class SoftMax(BaseLayer):
 		# print(idx)
 		# x[idx,idx] = x*(1-x)
 		# grad = -np.outer(self.value, self.value) + np.diag(self.value.flatten())
+		x = []
+		for i in range(len(error_tensor)):
+			x.append(np.dot(np.diagflat(error_tensor[i]) - np.dot(error_tensor[i], error_tensor[i].T),self.value[i]))
+		return x#np.dot(np.diagflat(error_tensor) - np.dot(error_tensor, error_tensor.T),self.value)
 		# print("WPW",(self.value * (error_tensor - (self.value * error_tensor).sum(axis=0))).shape, self.value.shape, error_tensor.shape)
 		return self.value * (error_tensor - np.multiply(self.value,error_tensor).sum(axis=0)).round(3)
 		

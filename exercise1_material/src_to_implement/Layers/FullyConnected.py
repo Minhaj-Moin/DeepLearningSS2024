@@ -1,6 +1,7 @@
 import numpy as np
-print(__name__)
-from Layers.Base import BaseLayer
+if __name__=='__main__':
+	from Base import BaseLayer
+else: from Layers.Base import BaseLayer
 
 class FullyConnected(BaseLayer):
 	
