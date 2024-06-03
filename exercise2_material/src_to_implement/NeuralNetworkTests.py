@@ -443,7 +443,6 @@ class TestInitializers(unittest.TestCase):
 
     def test_xavier_distribution(self):
         weights_shape, weights_after_init = self._performInitialization(Initializers.Xavier())
-
         scale = np.sqrt(2) / np.sqrt(self.input_size + self.output_size)
         p_value = stats.kstest(weights_after_init.flat, 'norm', args=(0, scale)).pvalue
         self.assertGreater(p_value, 0.01, "Possible reason: Formula for Xavier initialization is not implemented"

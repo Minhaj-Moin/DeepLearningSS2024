@@ -27,13 +27,20 @@ class FullyConnected(BaseLayer):
 
 	@gradient_weights.setter
 	def gradient_weights(self, gradient_weights):  self._gradient_weights = gradient_weights
+	
 	def forward(self, input_tensor):
 		b = np.ones((input_tensor.shape[0],input_tensor.shape[1]+1))
 		b[:,:-1] = input_tensor
 		self.input_tensor = b
 		return np.dot(self.input_tensor,self.weights)
+	
 	def backward(self, error_tensor):		
 		self._gradient_weights = np.dot(self.input_tensor.T,error_tensor)
 		if self._optimizer:
 			self.weights = self._optimizer.calculate_update(self.weights, self._gradient_weights)
 		return np.dot(error_tensor,self.weights.transpose())[:,:-1]
+
+	def initialize(self, weights_initializer, bias_initializer):
+		print("initialize CAlled")
+		self.weights = weights_initializer.initialize()
+		self.bias = bias_initializer.initialize()
