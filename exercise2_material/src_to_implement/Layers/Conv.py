@@ -25,25 +25,38 @@ a = np.array([ [ 0,  1,  2,  3,  4],
 
 num_strides = 1
 
-if type(num_strides) == int:
-	num_strides = tuple((num_strides * np.ones(len(a.shape))).astype(int))
-	print(num_strides, a.shape)
 
 
-sub_shape = (3,3)
-view_shape = tuple(np.subtract(a.shape, sub_shape) + 2 - (num_strides)) + sub_shape
-print(view_shape)
-strides = a.strides + a.strides
-strides = np.array(strides)
-for k in range(len(a.strides)):
-	strides[k] *= num_strides[k]
-	# strides[1] *= num_strides[1]
-print(strides, np.divide(strides,4))
+# if type(num_strides) == int:
+# 	num_strides = tuple((num_strides * np.ones(len(a.shape))).astype(int))
+# 	print(num_strides, a.shape)
 
-sub_matrices = np.lib.stride_tricks.as_strided(a,view_shape,strides)
+
+# sub_shape = (3,3)
+# view_shape = tuple(np.subtract(a.shape, 0) + 2 - (num_strides)) + sub_shape
+# view_shape = a.shape+sub_shape
+# print(view_shape)
+# strides = a.strides + a.strides
+# strides = np.array(strides)
+# for k in range(len(a.strides)):
+# 	strides[k] *= num_strides[k]
+# 	# strides[1] *= num_strides[1]
+# print(strides, np.divide(strides,4))
+
+# sub_matrices = np.lib.stride_tricks.as_strided(np.pad(a,np.array(sub_shape)-1),view_shape,strides)
 conv_filter = np.array([[0,-1,0],
-						[-1,5,-1],
+						[-1,1,-1],
 						[0,-1,0]])
-m = np.einsum('ij,ijkl->kl',conv_filter,sub_matrices)
+# conv_filter = np.array([[6,7,8],
+# 						[11,12,13],
+# 						[16,17,18]])
+# # m = np.einsum('ij,ijkl->ij',conv_filter,sub_matrices)
 # print(sub_matrices)
-print(m)
+# # print(m)
+from scipy import signal
+corr = signal.correlate2d(a, conv_filter, boundary='fill', mode='same')
+print((corr+6))
+
+import matplotlib.pyplot as plt
+plt.imshow(corr)
+plt.show()
