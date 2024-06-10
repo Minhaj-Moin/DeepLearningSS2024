@@ -27,6 +27,7 @@ class FullyConnected(BaseLayer):
 
 	@gradient_weights.setter
 	def gradient_weights(self, gradient_weights):  self._gradient_weights = gradient_weights
+	
 	def forward(self, input_tensor):
 		b = np.ones((input_tensor.shape[0],input_tensor.shape[1]+1))
 		b[:,:-1] = input_tensor
