@@ -23,25 +23,27 @@ a = np.array([ [ 0,  1,  2,  3,  4],
     		   [15, 16, 17, 18, 19],
     		   [20, 21, 22, 23, 24]])
 
-num_strides = 2,1
+num_strides = 1
+
 if type(num_strides) == int:
-	num_strides = (num_strides, num_strides)
+	num_strides = tuple((num_strides * np.ones(len(a.shape))).astype(int))
+	print(num_strides, a.shape)
+
 
 sub_shape = (3,3)
-# W = a.shape[0]
-# K = sub_shape[0]
-# P = 0
-# S = num_strides[0]
-# output_shape = np.floor((W-K+2*P)/S)+1
-# a = np.pad(a, (P, P))
-# print("output:", output_shape)
 view_shape = tuple(np.subtract(a.shape, sub_shape) + 2 - (num_strides)) + sub_shape
 print(view_shape)
-strides = a.strides  * 2
+strides = a.strides + a.strides
 strides = np.array(strides)
-strides[0] *= num_strides[0]
-strides[1] *= num_strides[1]
+for k in range(len(a.strides)):
+	strides[k] *= num_strides[k]
+	# strides[1] *= num_strides[1]
 print(strides, np.divide(strides,4))
 
 sub_matrices = np.lib.stride_tricks.as_strided(a,view_shape,strides)
-print(sub_matrices, a.strides)
+conv_filter = np.array([[0,-1,0],
+						[-1,5,-1],
+						[0,-1,0]])
+m = np.einsum('ij,ijkl->kl',conv_filter,sub_matrices)
+# print(sub_matrices)
+print(m)
