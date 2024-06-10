@@ -41,6 +41,6 @@ class FullyConnected(BaseLayer):
 		return np.dot(error_tensor,self.weights.transpose())[:,:-1]
 
 	def initialize(self, weights_initializer, bias_initializer):
-		print("initialize CAlled")
-		self.weights = weights_initializer.initialize()
-		self.bias = bias_initializer.initialize()
+		# print("initialize CAlled")
+		self.weights = weights_initializer.initialize((self.output_size, self.input_size), self.input_size, self.output_size)
+		self.bias = bias_initializer.initialize((self.output_size), 1, self.output_size)
