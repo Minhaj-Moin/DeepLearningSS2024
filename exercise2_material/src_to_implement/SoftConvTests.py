@@ -119,6 +119,7 @@ def test_conv_forward_2d(bias, times=1):
     for t in range(times):
         output_forward = conv_layer.forward(base_input_image)
 
+    print(expected_result.shape)
     expected_result_bias = np.zeros_like(expected_result)
     expected_result_bias[:, 0] = expected_result[:, 0] + bias[0]
     expected_result_bias[:, 1] = expected_result[:, 1] + bias[1]
@@ -131,6 +132,7 @@ def test_conv_forward_2d(bias, times=1):
 
     if print_differences:
         print("Difference between expected and real result:\n{}".format(expected_result_bias - output_forward), flush=True)
+        print("output",output_forward)
 
     assert np.sum(np.abs(expected_result_bias - output_forward)) < 1e-7, "Result of the forward pass is not correct."
 

@@ -9,6 +9,10 @@ class Conv(BaseLayer):
 		self.stride_shape = stride_shape
 		self.convolution_shape = convolution_shape
 		self.num_kernels = num_kernels
+	def initialize(self, weights_initializer, bias_initializer):
+		# print("initialize CAlled")
+		self.weights = weights_initializer.initialize((self.output_size, self.input_size), self.input_size, self.output_size)
+		self.bias = bias_initializer.initialize((self.output_size), 1, self.output_size)
 
 	def forward(self, input_tensor):
 		'''shape (b, c, y) or (b, c, y, x)'''
@@ -36,4 +40,15 @@ class Conv(BaseLayer):
 		# # print(sub_matrices)
 		# print(m)
 		from scipy import signal
-		return signal.correlate2d(input_tensor, conv_filter, boundary='fill', mode='valid')
+		shp = [input_tensor.shape[0],self.num_kernels, input_tensor.shape[2]]
+		if len(input_tensor.shape)>2: shp += [input_tensor.shape[3]]
+		c = np.zeros(shp)
+		for i in range(input_tensor.shape[0]):
+			print(i, input_tensor[i].shape)
+			for ch in range(self.num_kernels):
+				if self.convolution_shape == 2:
+					from scipy.ndimage import convolve1d
+					c[i,ch,:] = convolve1d(input_tensor[i,0], weights=conv_filter)
+				else:
+					c[i,ch,:] = signal.correlate2d(input_tensor[i,0], conv_filter, boundary='fill', mode='same')
+		return c
