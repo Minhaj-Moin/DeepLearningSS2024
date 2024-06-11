@@ -27,36 +27,58 @@ num_strides = 1
 
 
 
-# if type(num_strides) == int:
-# 	num_strides = tuple((num_strides * np.ones(len(a.shape))).astype(int))
-# 	print(num_strides, a.shape)
+if type(num_strides) == int:
+	num_strides = tuple((num_strides * np.ones(len(a.shape))).astype(int))
+	print(num_strides, a.shape)
 
 
-# sub_shape = (3,3)
-# view_shape = tuple(np.subtract(a.shape, 0) + 2 - (num_strides)) + sub_shape
-# view_shape = a.shape+sub_shape
-# print(view_shape)
-# strides = a.strides + a.strides
-# strides = np.array(strides)
-# for k in range(len(a.strides)):
-# 	strides[k] *= num_strides[k]
-# 	# strides[1] *= num_strides[1]
-# print(strides, np.divide(strides,4))
+sub_shape = (3,3)
+view_shape = tuple(np.subtract(a.shape, sub_shape) + 2 - (num_strides)) + sub_shape
+print("view_shape",view_shape)
+strides = a.strides + a.strides
+strides = np.array(strides)
+for k in range(len(a.strides)):
+	strides[k] *= num_strides[k]
 
-# sub_matrices = np.lib.stride_tricks.as_strided(np.pad(a,np.array(sub_shape)-1),view_shape,strides)
+sub_matrices = np.lib.stride_tricks.as_strided(a,view_shape,strides)
 conv_filter = np.array([[0,-1,0],
-						[-1,1,-1],
+						[-1,5,-1],
 						[0,-1,0]])
 # conv_filter = np.array([[6,7,8],
 # 						[11,12,13],
 # 						[16,17,18]])
-# # m = np.einsum('ij,ijkl->ij',conv_filter,sub_matrices)
+m = np.einsum('ij,ijkl->kl',conv_filter,sub_matrices)
 # print(sub_matrices)
-# # print(m)
+print(m)
 from scipy import signal
-corr = signal.correlate2d(a, conv_filter, boundary='fill', mode='same')
-print((corr+6))
+corr = signal.correlate2d(a, conv_filter, boundary='fill', mode='valid')
+print((corr))
 
-import matplotlib.pyplot as plt
-plt.imshow(corr)
-plt.show()
+def conv_(img, conv_filter):
+    filter_size = conv_filter.shape[1]
+    result = np.zeros((img.shape))
+    #Looping through the image to apply the convolution operation.
+    for r in np.uint16(np.arange(filter_size/2.0, 
+                          img.shape[0]-filter_size/2.0+1)):
+        for c in np.uint16(np.arange(filter_size/2.0, 
+                                           img.shape[1]-filter_size/2.0+1)):
+            """
+            Getting the current region to get multiplied with the filter.
+            How to loop through the image and get the region based on 
+            the image and filer sizes is the most tricky part of convolution.
+            """
+            curr_region = img[r-np.uint16(np.floor(filter_size/2.0)):r+np.uint16(np.ceil(filter_size/2.0)), 
+                              c-np.uint16(np.floor(filter_size/2.0)):c+np.uint16(np.ceil(filter_size/2.0))]
+            #Element-wise multipliplication between the current region and the filter.
+            curr_result = curr_region * conv_filter
+            conv_sum = np.sum(curr_result) #Summing the result of multiplication.
+            result[r, c] = conv_sum #Saving the summation in the convolution layer feature map.
+            
+    #Clipping the outliers of the result matrix.
+    final_result = result[np.uint16(filter_size/2.0):result.shape[0]-np.uint16(filter_size/2.0), 
+                          np.uint16(filter_size/2.0):result.shape[1]-np.uint16(filter_size/2.0)]
+    return final_result
+print(conv_(a,conv_filter))
+# import matplotlib.pyplot as plt
+# plt.imshow(corr)
+# plt.show()
