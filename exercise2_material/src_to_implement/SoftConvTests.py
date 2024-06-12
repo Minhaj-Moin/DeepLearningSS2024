@@ -132,7 +132,7 @@ def test_conv_forward_2d(bias, times=1):
 
     if print_differences:
         print("Difference between expected and real result:\n{}".format(expected_result_bias - output_forward), flush=True)
-        print("output",output_forward)
+        # print("output",output_forward)
 
     assert np.sum(np.abs(expected_result_bias - output_forward)) < 1e-7, "Result of the forward pass is not correct."
 
@@ -171,6 +171,7 @@ def test_conv_backward_2d(times=1):
 
 
 if __name__ == "__main__":
+    print("forward")
     # test if the forward pass works if the bias is set to zero
     test_conv_forward_2d(np.array([0, 0]))
 
@@ -179,6 +180,8 @@ if __name__ == "__main__":
 
     # test if the forward pass works when it is called multiple times
     test_conv_forward_2d(np.array([0.5, -0.5]), 3)
+
+    print("backward")
 
     # test if the backward pass works when it is called multiple times
     test_conv_backward_2d()
