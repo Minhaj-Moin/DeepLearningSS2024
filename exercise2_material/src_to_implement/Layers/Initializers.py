@@ -4,7 +4,7 @@ class Constant:
     def __init__(self, value=0.1):
         self.value = value
     def initialize(self, weights_shape, fan_in, fan_out):
-        return self.value * np.ones(weights_shape)
+        return np.multiply(self.value, np.ones(weights_shape))
 
 class UniformRandom:
     def __init__(self):

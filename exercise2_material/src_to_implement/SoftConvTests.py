@@ -158,7 +158,9 @@ def test_conv_backward_2d(times=1):
 
     if print_differences:
         print("Difference between expected and actual E_(n-1):\n{}".format(expected_err_prev - err_prev))
+        print("___",err_prev)
         print("Difference between expected and actual gradient weights:\n{}".format(expected_gradient_weights - conv_layer.gradient_weights))
+        print("____", conv_layer.gradient_weights)
         print("Difference between expected and actual gradient bias:\n{}".format(expected_gradient_bias - conv_layer.gradient_bias, flush=True))
 
     assert np.sum(np.abs(expected_gradient_bias - conv_layer.gradient_bias)) < 1e-7, \
