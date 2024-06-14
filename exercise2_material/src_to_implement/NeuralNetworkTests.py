@@ -1195,19 +1195,12 @@ class TestPooling(unittest.TestCase):
         layer = Pooling.Pooling((2, 2), (2, 2))
         result = layer.forward(self.input_tensor)
         expected_shape = np.array([self.batch_size, 2, 2, 3])
-<<<<<<< HEAD
         self.assertEqual(
             np.sum(np.abs(np.array(result.shape) - expected_shape)),
             0,
             "Possible reason: Output tensor from forward pass in Pooling has the wrong shape. Make sure to"
             "calculate the correct shape in case of even and odd dimensions.",
         )
-=======
-        print('test_shape:',expected_shape, result.shape)
-        self.assertEqual(np.sum(np.abs(np.array(result.shape) - expected_shape)), 0,
-                         "Possible reason: Output tensor from forward pass in Pooling has the wrong shape. Make sure to"
-                         "calculate the correct shape in case of even and odd dimensions.")
->>>>>>> 78334da168a564b9ed27c221cecb1a71f33f968a
 
     def test_overlapping_shape(self):
         layer = Pooling.Pooling((2, 1), (2, 2))

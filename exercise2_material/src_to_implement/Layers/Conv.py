@@ -77,7 +77,7 @@ class Conv(BaseLayer):
         for b in range(self.batch_size):
             for k in range(self.num_kernels):
                 for c in range(self.num_channels):
-                    upsampled_error_tensor = self.__upsample_stride(error_tensor[b,k],self.input_tensor.shape[2:])
+                    upsampled_error_tensor = self.__upsample(error_tensor[b,k],self.input_tensor.shape[2:])
                     prev_error_tensor[b, c] += convolve(
                         upsampled_error_tensor, self.weights[k, c], mode="same"
                     )
@@ -117,7 +117,7 @@ class Conv(BaseLayer):
         return padded_input
     
 
-    def __upsample_stride(self, input_tensor, out_shape):
+    def __upsample(self, input_tensor, out_shape):
         
         result = np.zeros(out_shape)
         if len(out_shape) == 2: # 2D
