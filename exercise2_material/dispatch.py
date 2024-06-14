@@ -3,19 +3,54 @@ import os
 import re
 from zipfile import ZipFile
 
-exercise_files = {0: ["generator.py", "main.py", "pattern.py"],
-                  1: ["FullyConnected.py", "ReLU.py", "SoftMax.py",
-                      "Loss.py", "Optimizers.py", "NeuralNetwork.py", "Base.py"],
-                  2: ["FullyConnected.py", "ReLU.py", "SoftMax.py",
-                      "Loss.py", "Optimizers.py", "NeuralNetwork.py", "Conv.py", "Flatten.py", "Initializers.py",
-                      "Pooling.py", "Base.py"],
-                  3: ["FullyConnected.py", "ReLU.py", "Sigmoid.py", "SoftMax.py", "Constraints.py",
-                      "Loss.py", "Optimizers.py", "NeuralNetwork.py", "Conv.py", "Flatten.py", "Initializers.py",
-                      "Pooling.py", "Base.py", "BatchNormalization.py", "Dropout.py", "RNN.py", "TanH.py"],
-                  4: ["data.py", "train.py", "trainer.py", "model.py"]}
+exercise_files = {
+    0: ["generator.py", "main.py", "pattern.py"],
+    1: [
+        "FullyConnected.py",
+        "ReLU.py",
+        "SoftMax.py",
+        "Loss.py",
+        "Optimizers.py",
+        "NeuralNetwork.py",
+        "Base.py",
+    ],
+    2: [
+        "FullyConnected.py",
+        "ReLU.py",
+        "SoftMax.py",
+        "Loss.py",
+        "Optimizers.py",
+        "NeuralNetwork.py",
+        "Conv.py",
+        "Flatten.py",
+        "Initializers.py",
+        "Pooling.py",
+        "Base.py",
+    ],
+    3: [
+        "FullyConnected.py",
+        "ReLU.py",
+        "Sigmoid.py",
+        "SoftMax.py",
+        "Constraints.py",
+        "Loss.py",
+        "Optimizers.py",
+        "NeuralNetwork.py",
+        "Conv.py",
+        "Flatten.py",
+        "Initializers.py",
+        "Pooling.py",
+        "Base.py",
+        "BatchNormalization.py",
+        "Dropout.py",
+        "RNN.py",
+        "TanH.py",
+    ],
+    4: ["data.py", "train.py", "trainer.py", "model.py"],
+}
 
 
-def coherency_check(actual_files, desired_files, print_out = True):
+def coherency_check(actual_files, desired_files, print_out=True):
     missing_files = []
     ambigous_files = []
     for des_file in desired_files:
@@ -27,14 +62,14 @@ def coherency_check(actual_files, desired_files, print_out = True):
             missing_files.append(des_file)
         elif found > 1:
             ambigous_files.append(des_file)
-    if len(missing_files) and print_out :
+    if len(missing_files) and print_out:
         print("The following files could not be found: ")
         for i, f in enumerate(missing_files):
-            print("%d: %20s" %(i, f))
-    if len(ambigous_files) and print_out :
+            print("%d: %20s" % (i, f))
+    if len(ambigous_files) and print_out:
         print("Ambiguities in the file namings were found: ")
         for i, f in enumerate(ambigous_files):
-            print("%d: %20s" %(i, f))
+            print("%d: %20s" % (i, f))
     if len(ambigous_files) or len(missing_files):
         return False
     else:
@@ -53,7 +88,7 @@ def dispatch(actual_files, desired_files, output_file):
     if not output_file.endswith(".zip"):
         output_file += ".zip"
 
-    with ZipFile(output_file,'w') as zip:
+    with ZipFile(output_file, "w") as zip:
         # writing each file one by one
         for file in files_to_dispatch:
             zip.write(file, arcname=os.path.split(file)[1])
@@ -68,7 +103,14 @@ def get_files(path):
 
 
 def get_exercise_number(files):
-    unit_test_files = list(filter(lambda x: "numpytests" in x.lower() or "neuralnetworktests" in x.lower() or "pytorchchallengetests" in x.lower(), files))
+    unit_test_files = list(
+        filter(
+            lambda x: "numpytests" in x.lower()
+            or "neuralnetworktests" in x.lower()
+            or "pytorchchallengetests" in x.lower(),
+            files,
+        )
+    )
     ids = []
     for file in unit_test_files:
         with open(file, "r") as f:
@@ -79,34 +121,52 @@ def get_exercise_number(files):
     if len(ids) == 1:
         return ids[0]
     elif len(ids) > 1:
-        print("Ambiguities with the exercises. The dispatch looks for the unittest in order to identify exercise at hand. \n"
-                        "Please put your stuff in its own folder, together with the corresponding unittest. \n"
-                        "Found unittests of the exercises: \n Exercise {}".format('\n Exercise '.join(map(str, ids))))
+        print(
+            "Ambiguities with the exercises. The dispatch looks for the unittest in order to identify exercise at hand. \n"
+            "Please put your stuff in its own folder, together with the corresponding unittest. \n"
+            "Found unittests of the exercises: \n Exercise {}".format(
+                "\n Exercise ".join(map(str, ids))
+            )
+        )
         exit(1)
     else:
-        print("Unittest file could not be found. It might got renamed to something else.")
+        print(
+            "Unittest file could not be found. It might got renamed to something else."
+        )
         exit(1)
 
+
 if __name__ == "__main__":
-    description = "The dispatch tool is a helper script, that conveniently checks all your files for completeness and" \
-                  " zips everything together so you can submit just one file. It helps us to have a coherent " \
-                  "submissions across all students and also prevents you from forgetting any file to submit." \
-                  " If the dispatcher is executed without arguments, it will look for  unittests in the current " \
-                  "working directory and will dispatch the corresponding files accordingly into a default zip file " \
-                  "submission.zip. We recommend to use the dispatcher explicitly with the -i argument for the" \
-                  " folder that needs to be dispatched and -o arguments for the output zip folder"
+    description = (
+        "The dispatch tool is a helper script, that conveniently checks all your files for completeness and"
+        " zips everything together so you can submit just one file. It helps us to have a coherent "
+        "submissions across all students and also prevents you from forgetting any file to submit."
+        " If the dispatcher is executed without arguments, it will look for  unittests in the current "
+        "working directory and will dispatch the corresponding files accordingly into a default zip file "
+        "submission.zip. We recommend to use the dispatcher explicitly with the -i argument for the"
+        " folder that needs to be dispatched and -o arguments for the output zip folder"
+    )
 
     parser = ArgumentParser(description=description)
-    parser.add_argument("-i", "--input", required=False,
-                        help = "src folder which contains all python files")
-    parser.add_argument("-o", "--output", required=False,
-                        help="file name of output zip folder")
+    parser.add_argument(
+        "-i",
+        "--input",
+        required=False,
+        help="src folder which contains all python files",
+    )
+    parser.add_argument(
+        "-o", "--output", required=False, help="file name of output zip folder"
+    )
     args = parser.parse_args()
 
     if args.input is None and args.output is None:
-        print("No arguments were given. Check python dispatch.py --help for further information.\n\n"
-              "However shall the content of \n {} \n "
-              "be dispatched into \n {} [yes/no]?".format(os.getcwd(), os.path.join(os.getcwd(), "submission.zip")))
+        print(
+            "No arguments were given. Check python dispatch.py --help for further information.\n\n"
+            "However shall the content of \n {} \n "
+            "be dispatched into \n {} [yes/no]?".format(
+                os.getcwd(), os.path.join(os.getcwd(), "submission.zip")
+            )
+        )
         resp = input("")
         if resp.lower() in ["y", "yes"]:
             args.input = os.getcwd()
@@ -125,11 +185,15 @@ if __name__ == "__main__":
     ex_nr = get_exercise_number(files)
     print("Exercise {} is about to be dispatched".format(ex_nr))
     if not coherency_check(files, exercise_files[ex_nr]):
-        print("It seems the files listed above are missing. Please check your files if you still want to submit them")
+        print(
+            "It seems the files listed above are missing. Please check your files if you still want to submit them"
+        )
         response = input("Do you want to continue with the dispatch? [y/n]: ")
         if response.lower() == "y":
             dispatch(files, exercise_files[ex_nr], args.output)
-            print("Your submission is ready to be submitted. Notice, the files listed above we're not dispatched.")
+            print(
+                "Your submission is ready to be submitted. Notice, the files listed above we're not dispatched."
+            )
             print("Please upload {} now to studon".format(args.output))
         elif response.lower() == "n":
             print("Dispatching has been stopped")
@@ -139,7 +203,3 @@ if __name__ == "__main__":
         dispatch(files, exercise_files[ex_nr], args.output)
         print("Your submission contains all it needs and is ready to be submitted")
         print("Please upload {} now to studon".format(args.output))
-
-
-
-
