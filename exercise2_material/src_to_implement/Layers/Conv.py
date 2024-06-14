@@ -97,32 +97,36 @@ class Conv(BaseLayer):
     
 
     def __pad(self, input_tensor):
-        ''''
-        pads the input in such a way that correlation produces
-        same shape output as the input tensor
-        '''
-        # formula
-
-        filters = np.array(self.convolution_shape[1:])
-        padwh_before = np.floor(filters/2).astype(int)
-        # handle uneven
-        padwh_after = filters - padwh_before - 1
-        if len(filters) == 2: # 2D
-            pad_width = [(0,0), (0,0), (padwh_before[0], padwh_after[0]), (padwh_before[1],padwh_after[1])]
-        else:
-            pad_width = [(0,0), (0,0), (padwh_before[0], padwh_after[0])]
-
-        padded_input = np.pad(input_tensor, pad_width=pad_width, constant_values=0)
         
-        return padded_input
+        pad_before = np.floor(np.array(self.convolution_shape[1:]) / 2).astype(int)
+        pad_after = np.array(self.convolution_shape[1:]) - pad_before - 1
+        
+        if np.array(self.convolution_shape[1:]).size == 2: 
+            pad_width = [
+                (0, 0),  # No padding for batch dimension
+                (0, 0),  # No padding for channel dimension
+                (pad_before[0], pad_after[0]),  # Padding for height
+                (pad_before[1], pad_after[1])   # Padding for width
+            ]
+        else:
+            pad_width = [
+                (0, 0),  # No padding for batch dimension
+                (0, 0),  # No padding for channel dimension
+                (pad_before[0], pad_after[0])   # Padding for 1D case
+            ]
+
+        return np.pad(input_tensor, pad_width=pad_width, constant_values=0)
     
 
     def __upsample(self, input_tensor, out_shape):
         
-        result = np.zeros(out_shape)
-        if len(out_shape) == 2: # 2D
-            result[0::self.stride_shape[0], 0::self.stride_shape[1]] = input_tensor
-            return result
-        else:
-            result[0::self.stride_shape[0]] = input_tensor
-            return result
+        upsampled_result = np.zeros(out_shape)
+        
+        if len(out_shape) == 2: 
+            stride_h, stride_w = self.stride_shape
+            upsampled_result[::stride_h, ::stride_w] = input_tensor
+        else:  
+            stride = self.stride_shape[0]
+            upsampled_result[::stride] = input_tensor
+        
+        return upsampled_result
