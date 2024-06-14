@@ -1,5 +1,8 @@
 import numpy as np
-from Layers.Base import BaseLayer
+if __name__=='__main__':
+    from Base import BaseLayer
+    import unittest
+else: from Layers.Base import BaseLayer
 
 class Flatten(BaseLayer):
     def __init__(self) -> None:

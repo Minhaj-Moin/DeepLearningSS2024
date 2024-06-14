@@ -834,6 +834,7 @@ class TestPooling(unittest.TestCase):
         layer = Pooling.Pooling((2, 2), (2, 2))
         result = layer.forward(self.input_tensor)
         expected_shape = np.array([self.batch_size, 2, 2, 3])
+        print('test_shape:',expected_shape, result.shape)
         self.assertEqual(np.sum(np.abs(np.array(result.shape) - expected_shape)), 0,
                          "Possible reason: Output tensor from forward pass in Pooling has the wrong shape. Make sure to"
                          "calculate the correct shape in case of even and odd dimensions.")

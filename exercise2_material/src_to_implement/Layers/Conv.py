@@ -34,8 +34,8 @@ class Conv(BaseLayer):
 			for ch in range(input_tensor.shape[1]):
 				for ker in range(self.num_kernels):
 					if len(self.convolution_shape) == 2:
-						print("conv shape",self.convolution_shape)
-						print("INPUTSHAPES",input_tensor.shape, input_tensor[b, ch].shape, self.weights[ker,ch].shape, self.weights.shape, outshape, self.convolution_shape)
+						# print("conv shape",self.convolution_shape)
+						# print("INPUTSHAPES",input_tensor.shape, input_tensor[b, ch].shape, self.weights[ker,ch].shape, self.weights.shape, outshape, self.convolution_shape)
 						output[b,ker] = correlate1d(input_tensor[b,ch], weights=self.weights[ker,ch], mode='constant') + self.bias[ker]
 					elif len(self.convolution_shape) == 3:
 						# print("conv shape",self.convolution_shape)
