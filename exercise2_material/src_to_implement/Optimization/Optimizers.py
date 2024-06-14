@@ -28,7 +28,8 @@ class SgdWithMomentum:
         self.V = (self.momentum_rate * self.V) - (self.learning_rate * gradient_tensor)
         print(self.V, weight_tensor, gradient_tensor)
         return weight_tensor + self.V
-
+    def copy(self, deep = True):
+        return SgdWithMomentum(self.learning_rate, self.momentum_rate)
 
 class Adam:
     def __init__(self, learning_rate=0.001, mu=0.9, rho=0.999):
@@ -60,3 +61,5 @@ class Adam:
         return weight_tensor - self.learning_rate * (
             v_hat / (np.sqrt(r_hat) + self.epsilon)
         )
+    def copy(self, deep = True):
+        return Adam(self.learning_rate, self.mu, self.rho)
