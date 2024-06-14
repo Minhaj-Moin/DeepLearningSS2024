@@ -12,7 +12,7 @@ import argparse
 
 ID = 2  # identifier for dispatcher
 
-
+np.set_printoptions(suppress=True)
 class TestFullyConnected2(unittest.TestCase):
     def setUp(self):
         self.batch_size = 9
