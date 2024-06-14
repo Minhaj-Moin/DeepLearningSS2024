@@ -47,8 +47,8 @@ class Pooling(BaseLayer):
 					for x in range(error_tensor.shape[3]):
 
 						maxlocs[batch, channel, y, x] = np.multiply(maxlocs[batch, channel, y, x], error_tensor[batch, channel, y, x])
-				d_tensor[batch, channel] = np.lib.stride_tricks.as_strided(maxlocs[batch, channel], self.input_tensor[batch, channel].shape, self.input_tensor[batch, channel].strides)
-				print("B",batch, channel, maxlocs[batch, channel].shape)
+				d_tensor[batch, channel] = np.lib.stride_tricks.as_strided(maxlocs[batch, channel], self.input_tensor[batch, channel].shape, self.input_tensor[batch, channel].strides[::-1])
+				print("B",batch, channel, maxlocs[batch, channel].shape, self.input_tensor[batch, channel].strides, self.strides)
 		with open('f.txt', 'w') as outfile:
 			outfile.write(f"error_tensor:\n{error_tensor.round(2)}\n {error_tensor.shape}\nerror_tensor:\n{self.forward_output.round(2)}\n {self.forward_output.shape}\n d_tensor:\n{d_tensor.round(2)}\n {d_tensor.shape}\nMaxLocs\n{maxlocs} \n{maxlocs.shape}\nmaxlocs_org:\n{self.maxlocs_org}\n{self.maxlocs_org.shape}\ninput_tensor:\n{self.input_tensor}\n {self.input_tensor.shape}\n ")
 		return d_tensor
