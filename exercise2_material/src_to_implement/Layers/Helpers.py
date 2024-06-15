@@ -6,7 +6,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.datasets import load_iris, load_digits
 
 
-def gradient_check(layers, input_tensor, label_tensor):
+def gradient_check(layers, input_tensor, label_tensor, error_tensor_ = None):
     epsilon = 1e-5
     difference = np.zeros_like(input_tensor)
 
@@ -19,6 +19,10 @@ def gradient_check(layers, input_tensor, label_tensor):
     for layer in reversed(layers[:-1]):
         error_tensor = layer.backward(error_tensor)
 
+    # if error_tensor_ is not None:
+    #     print("taking arg error_tensor\n", error_tensor_)
+    #     error_tensor = error_tensor_
+    print("Error\n",error_tensor)
     it = np.nditer(input_tensor, flags=["multi_index"])
     while not it.finished:
         plus_epsilon = input_tensor.copy()
@@ -48,8 +52,9 @@ def gradient_check(layers, input_tensor, label_tensor):
                 np.abs(analytical_derivative - numerical_derivative)
                 / normalizing_constant
             )
-
+        # print(analytical_derivative/normalizing_constant, numerical_derivative/normalizing_constant)
         it.iternext()
+    print("Diff\n",difference)
     return difference
 
 
