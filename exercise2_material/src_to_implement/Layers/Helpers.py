@@ -22,7 +22,7 @@ def gradient_check(layers, input_tensor, label_tensor, error_tensor_ = None):
     # if error_tensor_ is not None:
     #     print("taking arg error_tensor\n", error_tensor_)
     #     error_tensor = error_tensor_
-    print("Error\n",error_tensor)
+    # print("Error\n",error_tensor)
     it = np.nditer(input_tensor, flags=["multi_index"])
     while not it.finished:
         plus_epsilon = input_tensor.copy()
@@ -54,7 +54,7 @@ def gradient_check(layers, input_tensor, label_tensor, error_tensor_ = None):
             )
         # print(analytical_derivative/normalizing_constant, numerical_derivative/normalizing_constant)
         it.iternext()
-    print("Diff\n",difference)
+    # print("Diff\n",difference)
     return difference
 
 

@@ -1244,6 +1244,7 @@ class TestPooling(unittest.TestCase):
         difference = Helpers.gradient_check(
             self.layers, self.input_tensor, label_tensor
         )
+        print(difference)
         self.assertLessEqual(
             np.sum(difference),
             1e-6,
