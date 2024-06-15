@@ -26,7 +26,7 @@ class SgdWithMomentum:
         if self.V is None:
             self.V = np.zeros_like(weight_tensor)
         self.V = (self.momentum_rate * self.V) - (self.learning_rate * gradient_tensor)
-        print(self.V, weight_tensor, gradient_tensor)
+        # print(self.V, weight_tensor, gradient_tensor)
         return weight_tensor + self.V
     def copy(self, deep = True):
         return SgdWithMomentum(self.learning_rate, self.momentum_rate)
