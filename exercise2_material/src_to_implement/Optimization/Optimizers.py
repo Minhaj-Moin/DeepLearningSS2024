@@ -44,13 +44,15 @@ class Adam:
         pass
 
     def calculate_update(self, weight_tensor, gradient_tensor):
-        if self.V is None:
+        if self.V is None or self.V.shape != weight_tensor.shape:
             self.V = np.zeros_like(weight_tensor)
 
-        if self.R is None:
+        if self.R is None or self.R.shape != weight_tensor.shape:
             self.R = np.zeros_like(weight_tensor)
 
+        # print((self.mu * self.V).shape, weight_tensor.shape, ((1 - self.mu) * gradient_tensor).shape)
         self.V = self.mu * self.V + (1 - self.mu) * gradient_tensor
+
         self.R = self.rho * self.R + (1 - self.rho) * gradient_tensor**2
 
         self.k += 1.0
