@@ -23,7 +23,7 @@ class Conv(BaseLayer):
         fan_in = np.prod(self.convolution_shape)
         fan_out = self.num_kernels * np.prod(
             self.convolution_shape[1:]
-        )  # NOTE why this shape??
+        )
 
         self.weights = weights_initializer.initialize(
             self.weights.shape, fan_in, fan_out
