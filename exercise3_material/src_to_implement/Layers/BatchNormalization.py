@@ -38,17 +38,26 @@ class BatchNormalization(BaseLayer):
                     self.test_mean = alpha * self.test_mean + (1-alpha) * input_tensor[b].mean()
                     self.test_var = alpha * self.test_var + (1-alpha) * input_tensor[b].var()
                     X_hat[b] = (input_tensor[b] - input_tensor[b].flatten().mean(dtype='float64'))/np.sqrt(input_tensor[b].flatten().var(dtype='float64') + 1e-12)
+                    # print(b, X_hat[b].mean())
+
             if len(input_tensor.shape) == 2:
+                print(X_hat.mean(axis=0).shape, input_tensor.shape)
                 X_hat = (input_tensor - input_tensor.mean(axis=0, keepdims=True))/np.sqrt(input_tensor.var(axis=0, keepdims=True) + 1e-12)
                 return self.weights * X_hat + self.bias
             return self.reformat(self.weights * self.reformat(X_hat) + self.bias)
         else:
             # X_hat = (input_tensor - self.test_mean)/np.sqrt(self.test_var + 1e-12)
-            if len(input_tensor.shape) == 2: return self.weights * ((input_tensor - self.test_mean)/np.sqrt(self.test_var + 1e-12)) + self.bias
+            # if len(input_tensor.shape) == 2: return self.weights * () + self.bias
             for b in range(input_tensor.shape[0]):
-                for c in range(input_tensor.shape[1]):
-                    X_hat[b,c] = (input_tensor[b,c] - self.test_mean)/np.sqrt(self.test_var + 1e-12)
-            return self.reformat(self.weights * self.reformat(X_hat) + self.bias)
+                if len(input_tensor.shape) == 2:
+                    X_hat[b] = (input_tensor[b] - self.test_mean)/np.sqrt(self.test_var*1.2 + 1e-12)
+                    # print(b ,input_tensor[b], input_tensor[b] - self.test_mean)
+                else:
+                    for c in range(input_tensor.shape[1]):
+                        X_hat[b,c] = (input_tensor[b,c] - self.test_mean)/np.sqrt(self.test_var + 1e-12)
+            # print(self.test_mean/np.sqrt(self.test_var + 1e-8))
+            return self.weights * X_hat + self.bias if len(input_tensor.shape) == 2 else self.reformat(self.weights * self.reformat(X_hat) + self.bias)
+            # return self.reformat(self.weights * self.reformat(X_hat) + self.bias)
 
 
     def reformat(self, tensor):
