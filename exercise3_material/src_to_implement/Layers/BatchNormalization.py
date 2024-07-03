@@ -82,5 +82,8 @@ class BatchNormalization(BaseLayer):
             input_tensor = self.reformat(self.input_tensor)
         self.gradient_weights = (E_t * X_hat).sum(axis=0)
         self.gradient_bias = E_t.sum(axis=0)
-        if len(error_tensor.shape) > 2: return self.reformat(compute_bn_gradients(E_t, input_tensor, self.weights, input_tensor.mean(axis=0), input_tensor.var(axis=0)))
-        return (compute_bn_gradients(E_t, input_tensor, self.weights, input_tensor.mean(axis=0), input_tensor.var(axis=0)))
+        if len(error_tensor.shape) > 2:
+            zz = compute_bn_gradients(E_t, input_tensor, self.weights, input_tensor.mean(axis=0), input_tensor.var(axis=0))
+            print(zz.shape)
+            return self.reformat(zz)
+        return compute_bn_gradients(E_t, input_tensor, self.weights, input_tensor.mean(axis=0), input_tensor.var(axis=0))
