@@ -2,6 +2,7 @@ if __name__ == "__main__":
     from Base import BaseLayer
 else:
     from Layers.Base import BaseLayer
+    from Layers.Helpers import compute_bn_gradients
 import numpy as np
 
 
@@ -43,7 +44,6 @@ class BatchNormalization(BaseLayer):
                     # print(b, X_hat[b].mean())
 
             if len(input_tensor.shape) == 2:
-                print(X_hat.mean(axis=0).shape, input_tensor.shape)
                 X_hat = (input_tensor - input_tensor.mean(axis=0, keepdims=True))/np.sqrt(input_tensor.var(axis=0, keepdims=True) + 1e-12)
                 self.X_hat = X_hat
                 return self.weights * X_hat + self.bias
@@ -73,23 +73,14 @@ class BatchNormalization(BaseLayer):
             return tensor.reshape(b, h, m * n).transpose(0,2,1).reshape(b * m * n, h)
 
     def backward(self, error_tensor):
+        E_t = error_tensor
+        X_hat = self.X_hat
+        input_tensor = self.input_tensor
         if len(error_tensor.shape) > 2:
-            error_tensor = self.reformat(error_tensor)
-            self.X_hat = self.reformat(self.X_hat)
-            self.input_tensor = self.reformat(self.input_tensor)
-        dW = (error_tensor * self.X_hat).sum(axis=0)
-        dB = error_tensor.sum(axis=0)
-
-        # self.weights -= dW
-        # self.bias -= dB
-        self.gradient_bias = dB
-        self.gradient_weights = dW
-        dX_hat = error_tensor * self.weights
-        dVar = (error_tensor * (self.input_tensor - self.input_tensor.mean(axis=0)) * (-1/2) * np.power(self.input_tensor.var(axis=0) + 1e-12, -3/2)).sum(axis=0)
-        # print(self.input_tensor.var(axis=1)self.weights.shape)
-        dMean = (dW * -1/np.sqrt(self.input_tensor.var(axis=0) + 1e-12)).sum(axis=0)
-        zz1 = (dX_hat * 1/np.sqrt(self.input_tensor.var(axis=0) + 1e-12))
-        zz2 = (dVar * 2 * (self.input_tensor - self.input_tensor.mean(axis=0))/self.input_tensor.shape[0])
-        zz3 = (dMean * 1/self.input_tensor.shape[0])
-        return zz1 + zz2 + zz3
-
+            E_t = self.reformat(error_tensor)
+            X_hat = self.reformat(self.X_hat)
+            input_tensor = self.reformat(self.input_tensor)
+        self.gradient_weights = (E_t * X_hat).sum(axis=0)
+        self.gradient_bias = E_t.sum(axis=0)
+        if len(error_tensor.shape) > 2: return self.reformat(compute_bn_gradients(E_t, input_tensor, self.weights, input_tensor.mean(axis=0), input_tensor.var(axis=0)))
+        return (compute_bn_gradients(E_t, input_tensor, self.weights, input_tensor.mean(axis=0), input_tensor.var(axis=0)))
