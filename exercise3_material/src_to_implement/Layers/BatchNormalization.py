@@ -53,7 +53,6 @@ class BatchNormalization(BaseLayer):
         alpha = 0.000001
         self.input_tensor = input_tensor.copy()
         if self.input_tensor.ndim > 2: input_tensor = self.reformat(input_tensor)
-        print(self.input_tensor.shape)
         X_hat = np.zeros_like(input_tensor)
 
         if not self.testing_phase:
@@ -91,7 +90,6 @@ class BatchNormalization(BaseLayer):
             E_t = self.reformat(error_tensor)
             X_hat = self.reformat(self.X_hat)
             input_tensor = self.reformat(self.input_tensor)
-            print(E_t.shape, X_hat.shape, input_tensor.shape, error_tensor.shape, self.X_hat.shape, self.input_tensor.shape)
         self.gradient_weights = (E_t * X_hat).sum(axis=0)
         self.gradient_bias = E_t.sum(axis=0)
         if len(error_tensor.shape) > 2:
