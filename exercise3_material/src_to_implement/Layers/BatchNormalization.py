@@ -79,6 +79,7 @@ class BatchNormalization(BaseLayer):
             self.input_tensor = self.reformat(self.input_tensor)
         dW = (error_tensor * self.X_hat).sum(axis=0)
         dB = error_tensor.sum(axis=0)
+
         # self.weights -= dW
         # self.bias -= dB
         self.gradient_bias = dB
