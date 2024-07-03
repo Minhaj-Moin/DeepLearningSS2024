@@ -10,13 +10,11 @@ class Sigmoid(BaseLayer):
     def __init__(self):
         BaseLayer.__init__(self)
         self.value = None
+        self.trainable = False
 
     def forward(self, input_tensor):
-        exps = np.exp(input_tensor.T - np.max(input_tensor, axis=1)).T
-        self.value = (exps.T / np.sum(exps, axis=1)).T
+        self.value = 1/(1 + np.exp(-input_tensor))
         return self.value
 
     def backward(self, error_tensor):
-        return self.value * (
-            (error_tensor.T - np.multiply(self.value, error_tensor).sum(axis=1).T).T
-        )
+        return error_tensor * (self.value - np.power(self.value,2))
