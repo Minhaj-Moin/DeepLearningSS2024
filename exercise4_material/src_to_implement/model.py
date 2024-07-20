@@ -15,6 +15,7 @@ class ResidualBlock(nn.Module):
         self.relu = nn.ReLU()
         self.out_channels = out_channels
 
+
     def forward(self, x):
         residual = x
         out = self.conv1(x)
