@@ -1,62 +1,43 @@
 import torch
-
+import numpy as np
 
 class ResNet(torch.nn.Module):
     def __init__(self):
         super().__init__()
-
-        self.conv = torch.nn.Conv2d(3, 64, kernel_size=5, stride=2, padding=0, bias=False)
-        self.bn = torch.nn.BatchNorm2d(64)
-        self.relu = torch.nn.ReLU(inplace=True)
-        self.maxpool = torch.nn.MaxPool2d(3, 2)
-        self.resblock1 = ResBlock(64, 64, 1)
-        self.resblock2 = ResBlock(64, 128, 2)
-        self.resblock3 = ResBlock(128, 256, 2)
-        self.resblock4 = ResBlock(256, 512, 2)
-        self.avg_pool = torch.nn.AvgPool2d((1, 1))
-        self.fc = torch.nn.Linear(512, 2)
-        self.sigmoid = torch.nn.Sigmoid()
+        self.ImgProcessBlock = torch.nn.Sequential(
+        torch.nn.Conv2d(3, 64, 5, 2, 0, bias=False),
+        torch.nn.BatchNorm2d(64),
+        torch.nn.ReLU(inplace=True),
+        torch.nn.MaxPool2d(3, 2),
+        ResBlock(64, 64, 1),
+        ResBlock(64, 128, 2),
+        ResBlock(128, 256, 2),
+        ResBlock(256, 512, 2))
+        self.FCLayer = torch.nn.Linear(512, 2)
+        self.Sigmoid = torch.nn.Sigmoid()
 
     def forward(self, x):
-        x = self.maxpool(self.relu(self.bn(self.conv(x))))
-        x = self.resblock1(x)
-        x = self.resblock2(x)
-        x = self.resblock3(x)
-        x = self.resblock4(x)
-
-        x = x.mean([2, 3])
-        x = self.fc(x)
-        out = self.sigmoid(x)
-
-        return out
+        x = self.ImgProcessBlock(x)
+        x = x.mean([2, 3]) #np.arange(len(x.shape))[2:].tolist() | take mean over spatial axes
+        x = self.FCLayer(x)
+        return self.Sigmoid(x)
 
 
 class ResBlock(torch.nn.Module):
-    def __init__(self, in_channels, out_channels, stride):
+    def __init__(self, in_c, out_c, stride):
         super(ResBlock, self).__init__()
 
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.stride = stride
-
-        self.res_block = torch.nn.Sequential(
-            torch.nn.Conv2d(in_channels, self.out_channels, 3, stride=self.stride, padding=1, bias=False),
-            torch.nn.BatchNorm2d(self.out_channels),
+        self.ResBlock_ = torch.nn.Sequential(
+            torch.nn.Conv2d(in_c, out_c, 3, stride=stride, padding=1, bias=False),
+            torch.nn.BatchNorm2d(out_c),
             torch.nn.ReLU(inplace=True),
-            torch.nn.Conv2d(self.out_channels, self.out_channels, 3, padding=1, bias=False),
-            torch.nn.BatchNorm2d(self.out_channels)
-        )
+            torch.nn.Conv2d(out_c, out_c, 3, padding=1, bias=False), # No Stride for 2nd Conv
+            torch.nn.BatchNorm2d(out_c))
 
-        self.relu = torch.nn.ReLU(inplace=True)
-        self.downsample = False
-        if self.stride != 1 or self.in_channels != self.out_channels:
-            self.downsample = True
-
-        self.conv1x1 = torch.nn.Conv2d(self.in_channels, self.out_channels, 1, stride=self.stride, padding=0,
-                                       bias=False)
-        self.bn2 = torch.nn.BatchNorm2d(self.out_channels)
+        self.ReLU = torch.nn.ReLU(inplace=True)
+        self.downsample = (stride != 1) or (in_c != out_c)
+        self.Conv = torch.nn.Conv2d(in_c, out_c, 1, stride=stride, padding=0,bias=False)
+        self.BatchNorm = torch.nn.BatchNorm2d(out_c)
 
     def forward(self, x):
-        identity = x
-        if self.downsample: identity = self.bn2(self.conv1x1(x))
-        return self.relu(self.res_block(x) + identity)
+        return self.ReLU(self.ResBlock_(x) + self.BatchNorm(self.Conv(x)) if self.downsample else x)
